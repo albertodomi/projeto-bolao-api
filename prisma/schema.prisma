@@ -1,0 +1,109 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model TipoCampanha {
+  id        Int        @id @default(autoincrement())
+  descricao String
+  status    String?
+  campanhas Campanha[]
+
+  @@map("tipo_campanha")
+}
+
+model Campanha {
+  id              Int            @id @default(autoincrement())
+  nome            String
+  dtInicio        DateTime       @map("dt_inicio")
+  dtFim           DateTime       @map("dt_fim")
+  taxaOperacional Decimal        @map("taxa_operacional")
+  valorBolao      Decimal        @map("valor_bolao")
+  codigoCampanha  String         @unique @map("codigo_campanha")
+  status          StatusCampanha
+  tipoCampanhaId  Int            @map("tipo_campanha_id")
+  tipoCampanha    TipoCampanha   @relation(fields: [tipoCampanhaId], references: [id])
+  opcoes          CampanhaOpcao?
+
+  @@map("campanha")
+}
+
+model CampanhaOpcao {
+  id               Int         @id @default(autoincrement())
+  descricao        String
+  status           StatusOpcao
+  ehResultadoFinal Boolean     @default(false) @map("eh_resultado_final")
+  campanhaId       Int         @unique(map: "campanha_opcoes_unique_resultado_final_por_campanha", where: raw("(eh_resultado_final = true)")) @map("campanha_id")
+  apostas          Aposta[]
+  campanha         Campanha    @relation(fields: [campanhaId], references: [id], onDelete: Cascade)
+
+  @@unique([campanhaId, descricao])
+  @@map("campanha_opcoes")
+}
+
+model Usuario {
+  id          Int           @id @default(autoincrement())
+  nome        String
+  cpf         String        @unique
+  email       String        @unique
+  senha       String
+  telefone    String?
+  tipoUsuario String?       @map("tipo_usuario")
+  status      StatusUsuario
+  apostas     Aposta[]
+
+  @@map("usuario")
+}
+
+model MeioPagamento {
+  id               Int      @id @default(autoincrement())
+  descricao        String
+  status           String?
+  exigeComprovante Boolean  @default(false) @map("exige_comprovante")
+  apostas          Aposta[]
+
+  @@map("meio_pagamento")
+}
+
+model Aposta {
+  id              Int           @id @default(autoincrement())
+  dtCriacao       DateTime      @default(now()) @map("dt_criacao")
+  comprovante     String?
+  status          StatusAposta
+  usuarioId       Int           @map("usuario_id")
+  meioPagamentoId Int           @map("meio_pagamento_id")
+  campanhaOpcaoId Int           @map("campanha_opcao_id")
+  campanhaOpcao   CampanhaOpcao @relation(fields: [campanhaOpcaoId], references: [id])
+  meioPagamento   MeioPagamento @relation(fields: [meioPagamentoId], references: [id])
+  usuario         Usuario       @relation(fields: [usuarioId], references: [id])
+
+  @@map("aposta")
+}
+
+enum StatusCampanha {
+  ABERTA
+  ENCERRADA
+  APURADA
+  INATIVA
+}
+
+enum StatusOpcao {
+  ATIVA
+  INATIVA
+}
+
+enum StatusUsuario {
+  ATIVO
+  INATIVO
+}
+
+enum StatusAposta {
+  PENDENTE
+  CONFIRMADA
+  CANCELADA
+}
