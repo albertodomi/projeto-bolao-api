@@ -56,7 +56,13 @@ export const CreateTipoCampanhaSchema = z.object({
 export const CreateApostaSchema = z.object({
   campanha_opcao_id: z.number().int().positive(),
   meio_pagamento_id: z.number().int().positive(),
-  comprovante: z.string().min(1).optional(),
+  comprovante: z
+    .string()
+    .trim()
+    .url("O comprovante deve ser um link (URL) válido")
+    .or(z.literal(""))
+    .transform((val) => (val === "" ? undefined : val))
+    .optional(),
 })
 
 export const UpdateApostaStatusSchema = z.object({
