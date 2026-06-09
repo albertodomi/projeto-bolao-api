@@ -29,4 +29,13 @@ export class UsuarioService {
     })
     return items.map((u: any) => ({ ...u, role: getRoleFromUsuario(u.tipoUsuario) }))
   }
+
+  static async updateStatus(id: number, status: "ATIVO" | "INATIVO") {
+    const updated = await prisma.usuario.update({
+      where: { id },
+      data: { status },
+      select: { id: true, nome: true, cpf: true, email: true, status: true, tipoUsuario: true },
+    })
+    return { ...updated, role: getRoleFromUsuario(updated.tipoUsuario) }
+  }
 }

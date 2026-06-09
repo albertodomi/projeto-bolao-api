@@ -32,7 +32,22 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
       res.status(400).json({ error: "Referência inválida", details: message })
       return
     }
-    if (message.includes("inválido")) {
+    if ((err as any).code === "P2025") {
+      res.status(404).json({ error: "Registro não encontrado" })
+      return
+    }
+    if (
+      message.includes("inválido") ||
+      message.includes("período") ||
+      message.includes("aberta") ||
+      message.includes("obrigatório") ||
+      message.includes("permitido") ||
+      message.includes("não encontrada") ||
+      message.includes("inativo") ||
+      message.includes("Credenciais") ||
+      message.includes("maior ou igual") ||
+      message.includes("bloqueado")
+    ) {
       res.status(400).json({ error: message })
       return
     }

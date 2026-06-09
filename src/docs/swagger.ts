@@ -92,6 +92,20 @@ export const openApi = {
           comprovante: { type: "string", format: "uri", example: "https://comprovantes.com/pagamento123.pdf" },
         },
       },
+      UpdateApostaStatus: {
+        type: "object",
+        required: ["status"],
+        properties: {
+          status: { type: "string", enum: ["PENDENTE", "CONFIRMADA", "CANCELADA"] },
+        },
+      },
+      UpdateUsuarioStatus: {
+        type: "object",
+        required: ["status"],
+        properties: {
+          status: { type: "string", enum: ["ATIVO", "INATIVO"] },
+        },
+      },
     },
   },
   paths: {
@@ -125,6 +139,14 @@ export const openApi = {
         responses: { "201": { description: "Criar usuário (admin)" } },
       },
     },
+    "/usuarios/{id}/status": {
+      patch: {
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/UpdateUsuarioStatus" } } } },
+        responses: { "200": { description: "Atualizar status do usuário (admin)" }, "403": { description: "Acesso negado" } },
+      },
+    },
     "/tipo-campanhas": {
       get: { responses: { "200": { description: "Listar tipos" } } },
       post: {
@@ -144,6 +166,7 @@ export const openApi = {
     "/campanhas/{id}/status": {
       patch: {
         security: [{ bearerAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
         requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/UpdateCampanhaStatus" } } } },
         responses: { "200": { description: "Atualizar status (admin)" } },
       },
@@ -152,12 +175,17 @@ export const openApi = {
       get: { responses: { "200": { description: "Listar opções" } } },
       post: {
         security: [{ bearerAuth: [] }],
+        parameters: [{ name: "campanhaId", in: "path", required: true, schema: { type: "integer" } }],
         requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/CreateCampanhaOpcao" } } } },
         responses: { "201": { description: "Criar opção (admin)" } },
       },
     },
     "/campanha-opcoes/{id}/definir-resultado-final": {
-      post: { security: [{ bearerAuth: [] }], responses: { "200": { description: "Definir resultado final (admin)" } } },
+      post: {
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        responses: { "200": { description: "Definir resultado final (admin)" } },
+      },
     },
     "/meios-pagamento": {
       get: { responses: { "200": { description: "Listar meios" } } },
@@ -168,10 +196,22 @@ export const openApi = {
       },
     },
     "/apostas": {
+      get: { security: [{ bearerAuth: [] }], responses: { "200": { description: "Listar todas as apostas (admin)" }, "403": { description: "Acesso negado" } } },
       post: {
         security: [{ bearerAuth: [] }],
         requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/CreateAposta" } } } },
         responses: { "201": { description: "Criar aposta" } },
+      },
+    },
+    "/apostas/minhas": {
+      get: { security: [{ bearerAuth: [] }], responses: { "200": { description: "Listar minhas apostas" } } },
+    },
+    "/apostas/{id}/status": {
+      patch: {
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        requestBody: { required: true, content: { "application/json": { schema: { $ref: "#/components/schemas/UpdateApostaStatus" } } } },
+        responses: { "200": { description: "Atualizar status da aposta (admin)" }, "403": { description: "Acesso negado" } },
       },
     },
   },

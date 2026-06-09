@@ -12,5 +12,6 @@ const usuarioRouter = Router()
 usuarioRouter.post("/register", AuthController.register)
 usuarioRouter.post("/", requireAuth, requireAdmin, UsuarioController.create)
 usuarioRouter.get("/", requireAuth, requireAdmin, UsuarioController.findAll)
+usuarioRouter.patch("/:id/status", requireAuth, requireAdmin, UsuarioController.updateStatus)
 
 export { authRouter, usuarioRouter }

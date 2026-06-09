@@ -68,3 +68,8 @@ export const CreateApostaSchema = z.object({
 export const UpdateApostaStatusSchema = z.object({
   status: StatusApostaSchema
 })
+
+export const UpdateUsuarioStatusSchema = z.object({
+  status: StatusUsuarioSchema
+})
+
