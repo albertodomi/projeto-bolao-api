@@ -16,7 +16,7 @@ export class UsuarioService {
         telefone: data.telefone ?? null,
         tipoUsuario: data.role,
       },
-      select: { id: true, nome: true, cpf: true, email: true, status: true, tipoUsuario: true },
+      select: { id: true, nome: true, cpf: true, email: true, telefone: true, status: true, tipoUsuario: true },
     })
 
     return { ...created, role: getRoleFromUsuario(created.tipoUsuario) }
@@ -25,7 +25,7 @@ export class UsuarioService {
   static async findAll() {
     const items = await prisma.usuario.findMany({
       orderBy: { id: "asc" },
-      select: { id: true, nome: true, cpf: true, email: true, status: true, tipoUsuario: true },
+      select: { id: true, nome: true, cpf: true, email: true, telefone: true, status: true, tipoUsuario: true },
     })
     return items.map((u: any) => ({ ...u, role: getRoleFromUsuario(u.tipoUsuario) }))
   }
@@ -34,7 +34,7 @@ export class UsuarioService {
     const updated = await prisma.usuario.update({
       where: { id },
       data: { status },
-      select: { id: true, nome: true, cpf: true, email: true, status: true, tipoUsuario: true },
+      select: { id: true, nome: true, cpf: true, email: true, telefone: true, status: true, tipoUsuario: true },
     })
     return { ...updated, role: getRoleFromUsuario(updated.tipoUsuario) }
   }

@@ -37,7 +37,7 @@ export class AuthService {
         telefone: data.telefone ?? null,
         tipoUsuario: "USER",
       },
-      select: { id: true, nome: true, cpf: true, email: true, status: true, tipoUsuario: true },
+      select: { id: true, nome: true, cpf: true, email: true, telefone: true, status: true, tipoUsuario: true },
     })
     return { ...created, role: "USER" }
   }
@@ -58,7 +58,7 @@ export class AuthService {
         telefone: null,
         tipoUsuario: "ADMIN",
       },
-      select: { id: true, nome: true, cpf: true, email: true, status: true, tipoUsuario: true },
+      select: { id: true, nome: true, cpf: true, email: true, telefone: true, status: true, tipoUsuario: true },
     })
 
     return { ...created, role: "ADMIN" }
@@ -74,6 +74,7 @@ export class AuthService {
       nome: usuario.nome,
       cpf: usuario.cpf,
       email: usuario.email,
+      telefone: usuario.telefone,
       status: usuario.status,
       role: getRoleFromUsuario(usuario.tipoUsuario),
     }
